@@ -73,7 +73,19 @@ jobs:
           name: dist
           path: artifact/
 
+      - name: Check if version is already published
+        id: published
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if npm view "@reekeer/sigdb@$version" version >/dev/null 2>&1; then
+            echo "@reekeer/sigdb@$version is already on npm, skipping publish"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish to npm
+        if: steps.published.outputs.exists == 'false'
         run: npm publish artifact/*.tgz --access public
 
   github-release:
