@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
@@ -40,7 +40,7 @@ jobs:
         run: npm pack
 
       - name: Upload dist
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dist
           path: |
@@ -59,7 +59,7 @@ jobs:
 
     steps:
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
@@ -68,7 +68,7 @@ jobs:
         run: npm install -g npm@^11.5.1
 
       - name: Download dist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: dist
           path: artifact/
@@ -86,7 +86,7 @@ jobs:
 
       - name: Publish to npm
         if: steps.published.outputs.exists == 'false'
-        run: npm publish artifact/*.tgz --access public
+        run: npm publish ./artifact/*.tgz --access public
 
   github-release:
     needs: npm
@@ -97,7 +97,7 @@ jobs:
 
     steps:
       - name: Download dist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: dist
           path: artifact/
