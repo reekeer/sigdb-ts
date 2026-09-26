@@ -1,9 +1,0 @@
-{
-  "dup": {"js": ["foo", "foo", " FOO "]},
-  "empty-js": {"js": ""},
-  "empty-list": {"js": []},
-  "empty-header": {"headers": {"": ""}},
-  "whitespace-cdn": {"cdn": "   "},
-  "no-groups": {},
-  "null-group": {"css": null}
-}

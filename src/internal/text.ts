@@ -35,3 +35,20 @@ export function utf8Encode(s: string): Uint8Array {
   }
   return encoder.encode(s);
 }
+
+export function compareCodePoints(a: string, b: string): number {
+  const n = Math.min(a.length, b.length);
+  for (let i = 0; i < n; i++) {
+    const x = a.charCodeAt(i);
+    const y = b.charCodeAt(i);
+    if (x !== y) {
+      const xs = x >= 0xd800 && x <= 0xdfff;
+      const ys = y >= 0xd800 && y <= 0xdfff;
+      if (xs !== ys) {
+        return xs ? 1 : -1;
+      }
+      return x - y;
+    }
+  }
+  return a.length - b.length;
+}

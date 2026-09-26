@@ -76,7 +76,7 @@ class Parser {
     return v;
   }
 
-  number(): number {
+  number(): number | bigint {
     const re = /-?(?:0|[1-9][0-9]*)(\.[0-9]+)?([eE][-+]?[0-9]+)?/y;
     re.lastIndex = this.pos;
     const m = re.exec(this.s);
@@ -84,7 +84,11 @@ class Parser {
       return this.fail("Expecting value");
     }
     this.pos += m[0].length;
-    return Number(m[0]);
+    const n = Number(m[0]);
+    if (m[1] === undefined && m[2] === undefined && !Number.isSafeInteger(n)) {
+      return BigInt(m[0]);
+    }
+    return n;
   }
 
   string(): string {
@@ -281,8 +285,10 @@ export function decodeJsonBytes(b: Uint8Array): string {
         return decodeUtf32(b.subarray(4), b[0] === 0xff);
       case "utf-32-le":
         return decodeUtf32(b, true);
-      default:
+      case "utf-32-be":
         return decodeUtf32(b, false);
+      default:
+        throw new JsonDecodeError(`unknown encoding ${enc}`);
     }
   } catch (e) {
     if (e instanceof JsonDecodeError) {
@@ -343,4 +349,193 @@ function decodeUtf32(b: Uint8Array, le: boolean): string {
 
 export function parseJsonBytes(b: Uint8Array, mode: JsonObjectMode = "map"): unknown {
   return parseJson(decodeJsonBytes(b), mode);
+}
+
+export class JsonEncodeError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "JsonEncodeError";
+  }
+}
+
+function escapeString(s: string): string {
+  let out = '"';
+  let start = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s.charCodeAt(i);
+    let esc: string | null = null;
+    if (c === 0x22) {
+      esc = '\\"';
+    } else if (c === 0x5c) {
+      esc = "\\\\";
+    } else if (c < 0x20) {
+      switch (c) {
+        case 0x0a:
+          esc = "\\n";
+          break;
+        case 0x0d:
+          esc = "\\r";
+          break;
+        case 0x09:
+          esc = "\\t";
+          break;
+        case 0x08:
+          esc = "\\b";
+          break;
+        case 0x0c:
+          esc = "\\f";
+          break;
+        default:
+          esc = `\\u${c.toString(16).padStart(4, "0")}`;
+      }
+    }
+    if (esc !== null) {
+      out += s.slice(start, i) + esc;
+      start = i + 1;
+    }
+  }
+  return `${out}${s.slice(start)}"`;
+}
+
+export function floatRepr(x: number): string {
+  if (Object.is(x, -0)) {
+    return "-0.0";
+  }
+  const [mantissa = "", expPart = "0"] = x.toExponential().split("e");
+  const exp = Number(expPart);
+  const negative = mantissa.startsWith("-");
+  const digits = mantissa.replace("-", "").replace(".", "");
+  const sign = negative ? "-" : "";
+  if (exp < -4 || exp >= 16) {
+    const m = digits.length > 1 ? `${digits[0]}.${digits.slice(1)}` : digits;
+    const e = Math.abs(exp).toString().padStart(2, "0");
+    return `${sign}${m}e${exp < 0 ? "-" : "+"}${e}`;
+  }
+  if (exp < 0) {
+    return `${sign}0.${"0".repeat(-exp - 1)}${digits}`;
+  }
+  const intLen = exp + 1;
+  if (digits.length <= intLen) {
+    return `${sign}${digits}${"0".repeat(intLen - digits.length)}.0`;
+  }
+  return `${sign}${digits.slice(0, intLen)}.${digits.slice(intLen)}`;
+}
+
+function typeName(value: unknown): string {
+  if (value instanceof Uint8Array || value instanceof ArrayBuffer) {
+    return "bytes";
+  }
+  if (typeof value === "object" && value !== null) {
+    return (value.constructor as { name?: string } | undefined)?.name ?? "object";
+  }
+  return typeof value;
+}
+
+function numberJson(n: number): string {
+  if (!Number.isFinite(n)) {
+    throw new JsonEncodeError("Out of range float values are not JSON compliant");
+  }
+  if (Number.isInteger(n)) {
+    return Number.isSafeInteger(n) ? String(n) : BigInt(n).toString();
+  }
+  return floatRepr(n);
+}
+
+function keyJson(key: unknown): string {
+  if (typeof key === "string") {
+    return escapeString(key);
+  }
+  if (typeof key === "number") {
+    return escapeString(numberJson(key));
+  }
+  if (typeof key === "bigint") {
+    return escapeString(key.toString());
+  }
+  if (typeof key === "boolean") {
+    return escapeString(key ? "true" : "false");
+  }
+  if (key === null) {
+    return '"null"';
+  }
+  throw new JsonEncodeError(`keys must be str, int, float, bool or None, not ${typeName(key)}`);
+}
+
+export function dumpJson(value: unknown): string {
+  const stack = new Set<object>();
+  const parts: string[] = [];
+
+  const enter = (o: object): void => {
+    if (stack.has(o)) {
+      throw new JsonEncodeError("Circular reference detected");
+    }
+    stack.add(o);
+  };
+
+  const walk = (v: unknown): void => {
+    if (v === null) {
+      parts.push("null");
+    } else if (v === true) {
+      parts.push("true");
+    } else if (v === false) {
+      parts.push("false");
+    } else if (typeof v === "string") {
+      parts.push(escapeString(v));
+    } else if (typeof v === "number") {
+      parts.push(numberJson(v));
+    } else if (typeof v === "bigint") {
+      parts.push(v.toString());
+    } else if (Array.isArray(v)) {
+      enter(v);
+      parts.push("[");
+      v.forEach((x, i) => {
+        if (i) {
+          parts.push(",");
+        }
+        walk(x);
+      });
+      parts.push("]");
+      stack.delete(v);
+    } else if (v instanceof Map) {
+      enter(v);
+      parts.push("{");
+      let first = true;
+      for (const [k, x] of v as Map<unknown, unknown>) {
+        parts.push(first ? "" : ",", keyJson(k), ":");
+        first = false;
+        walk(x);
+      }
+      parts.push("}");
+      stack.delete(v);
+    } else if (typeof v === "object" && [Object.prototype, null].includes(Object.getPrototypeOf(v))) {
+      enter(v);
+      parts.push("{");
+      let first = true;
+      for (const [k, x] of Object.entries(v)) {
+        parts.push(first ? "" : ",", keyJson(k), ":");
+        first = false;
+        walk(x);
+      }
+      parts.push("}");
+      stack.delete(v);
+    } else {
+      throw new JsonEncodeError(`Object of type ${typeName(v)} is not JSON serializable`);
+    }
+  };
+
+  walk(value);
+  return parts.join("");
+}
+
+export function toPlain(value: unknown): unknown {
+  if (value instanceof Map) {
+    const obj: Record<string, unknown> = {};
+    for (const [k, v] of value as Map<string, unknown>) {
+      Object.defineProperty(obj, k, { value: toPlain(v), enumerable: true, writable: true, configurable: true });
+    }
+    return obj;
+  }
+  if (Array.isArray(value)) {
+    return value.map(toPlain);
+  }
+  return value;
 }

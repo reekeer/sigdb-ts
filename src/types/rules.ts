@@ -1,28 +1,9 @@
-export type GroupName =
+import type { GroupKind, MatchMode } from "./models.ts";
+
+export type BuiltinGroupName =
   | "headers"
   | "js"
   | "meta"
-  | "html"
-  | "script_src"
-  | "css"
-  | "url"
-  | "path"
-  | "file"
-  | "dns"
-  | "subdomain"
-  | "link"
-  | "json"
-  | "api"
-  | "tls"
-  | "server"
-  | "framework"
-  | "cms"
-  | "cdn";
-
-export type GroupMapName = "headers" | "meta";
-
-export type GroupListName =
-  | "js"
   | "html"
   | "script_src"
   | "css"
@@ -52,7 +33,17 @@ export interface HtmlSpec {
 export type HtmlPattern = HtmlSpec | string;
 export type HtmlList = readonly HtmlPattern[] | HtmlPattern;
 
+export interface GroupConfig {
+  kind?: GroupKind;
+  match?: MatchMode;
+  ignore_case?: boolean;
+  trim?: boolean;
+}
+
+export type GroupsConfig = Readonly<Record<string, GroupConfig>> | ReadonlyMap<string, GroupConfig>;
+
 export interface RuleDefinition {
+  data?: unknown;
   headers?: StringMap;
   js?: StringList;
   meta?: StringMap;
@@ -72,7 +63,16 @@ export interface RuleDefinition {
   framework?: StringList;
   cms?: StringList;
   cdn?: StringList;
+  [group: string]: unknown;
 }
 
-export type Rules = Readonly<Record<string, RuleDefinition>> | ReadonlyMap<string, RuleDefinition>;
-export type SearchDefinition = RuleDefinition;
+export type Rules = Readonly<Record<string, RuleDefinition>> | ReadonlyMap<string, RuleDefinition | ReadonlyMap<string, unknown>>;
+export type RulesInput = Rules | readonly Rules[];
+export type SearchDefinition = Readonly<Record<string, unknown>> | ReadonlyMap<string, unknown>;
+
+export interface IndexSpec {
+  rules: RulesInput;
+  groups?: GroupsConfig | null;
+}
+
+export type IndexesConfig = Readonly<Record<string, IndexSpec>> | ReadonlyMap<string, IndexSpec>;
