@@ -1,0 +1,49 @@
+{
+  "name": "@reekeer/sigdb",
+  "version": "2.1.0",
+  "description": ".sigdb trie/Aho-Corasick compiler and loader",
+  "keywords": [
+    "stackscan",
+    "aho-corasick",
+    "fingerprints",
+    "sigdb",
+    "signatures",
+    "trie"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/reekeer/sigdb-ts#readme",
+  "bugs": {
+    "url": "https://github.com/reekeer/sigdb-ts/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reekeer/sigdb-ts.git"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test \"tests/**/*.test.ts\""
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.0",
+    "typescript": "^7.0.2"
+  }
+}

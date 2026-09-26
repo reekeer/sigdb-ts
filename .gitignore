@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tgz
+*.tsbuildinfo
+
+# SignatureDB files (committed fixtures are the exception)
+*.sigdb
+!tests/fixtures/*.sigdb
+
+.DS_Store
+.idea/
+.vscode/
