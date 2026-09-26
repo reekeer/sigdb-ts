@@ -1,0 +1,202 @@
+[
+  {
+    "call": "match",
+    "head": "js:foo",
+    "expect": {
+      "result": true,
+      "item_id": 1,
+      "key": "empty-js",
+      "head": "js:foo",
+      "all_ids": [
+        1,
+        3,
+        0
+      ]
+    }
+  },
+  {
+    "call": "match",
+    "head": "js:FOO.bundle.js",
+    "expect": {
+      "result": true,
+      "item_id": 1,
+      "key": "empty-js",
+      "head": "js:foo.bundle.js",
+      "all_ids": [
+        1,
+        3,
+        0
+      ]
+    }
+  },
+  {
+    "call": "match",
+    "head": "js:bar",
+    "expect": {
+      "result": true,
+      "item_id": 1,
+      "key": "empty-js",
+      "head": "js:bar",
+      "all_ids": [
+        1,
+        3
+      ]
+    }
+  },
+  {
+    "call": "match",
+    "head": "js:",
+    "expect": {
+      "result": true,
+      "item_id": 1,
+      "key": "empty-js",
+      "head": "js:",
+      "all_ids": [
+        1,
+        3
+      ]
+    }
+  },
+  {
+    "call": "match",
+    "head": "js",
+    "expect": {
+      "result": false,
+      "item_id": null,
+      "key": null,
+      "head": "js",
+      "all_ids": []
+    }
+  },
+  {
+    "call": "match",
+    "head": "Content-Type: text/html",
+    "expect": {
+      "result": true,
+      "item_id": 3,
+      "key": "empty-header",
+      "head": "content-type:text/html",
+      "all_ids": [
+        3
+      ]
+    }
+  },
+  {
+    "call": "match",
+    "head": "cdn:anything",
+    "expect": {
+      "result": true,
+      "item_id": 3,
+      "key": "empty-header",
+      "head": "cdn:anything",
+      "all_ids": [
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "call": "match",
+    "head": "css:site.css",
+    "expect": {
+      "result": true,
+      "item_id": 3,
+      "key": "empty-header",
+      "head": "css:site.css",
+      "all_ids": [
+        3
+      ]
+    }
+  },
+  {
+    "call": "match",
+    "head": "no colon here",
+    "expect": {
+      "result": false,
+      "item_id": null,
+      "key": null,
+      "head": "no colon here",
+      "all_ids": []
+    }
+  },
+  {
+    "call": "match",
+    "head": "",
+    "expect": {
+      "result": false,
+      "item_id": null,
+      "key": null,
+      "head": "",
+      "all_ids": []
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "js",
+    "value": "foo",
+    "expect": {
+      "result": true,
+      "item_id": 1,
+      "key": "empty-js",
+      "head": "js:foo",
+      "all_ids": [
+        1,
+        3,
+        0
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "css",
+    "value": "reset.css",
+    "expect": {
+      "result": true,
+      "item_id": 3,
+      "key": "empty-header",
+      "head": "css:reset.css",
+      "all_ids": [
+        3
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "cdn",
+    "value": "",
+    "expect": {
+      "result": true,
+      "item_id": 3,
+      "key": "empty-header",
+      "head": "cdn:",
+      "all_ids": [
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "call": "match_search",
+    "search": {},
+    "expect": {
+      "result": false,
+      "item_id": null,
+      "key": null,
+      "head": ""
+    }
+  },
+  {
+    "call": "match_search",
+    "search": {
+      "css": [
+        "a.css"
+      ]
+    },
+    "expect": {
+      "result": true,
+      "item_id": 3,
+      "key": "empty-header",
+      "head": "css:a.css"
+    }
+  }
+]

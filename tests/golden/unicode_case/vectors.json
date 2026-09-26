@@ -1,0 +1,334 @@
+[
+  {
+    "call": "match",
+    "head": "SERVER: НГИНКС/1.0",
+    "expect": {
+      "result": true,
+      "item_id": 0,
+      "key": "cyrillic",
+      "head": "server:нгинкс/1.0",
+      "all_ids": [
+        0
+      ]
+    }
+  },
+  {
+    "call": "match",
+    "head": "server:нгинкс",
+    "expect": {
+      "result": true,
+      "item_id": 0,
+      "key": "cyrillic",
+      "head": "server:нгинкс",
+      "all_ids": [
+        0
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "cms",
+    "value": "İSTANBUL",
+    "expect": {
+      "result": true,
+      "item_id": 1,
+      "key": "turkish-dotted",
+      "head": "cms:i̇stanbul",
+      "all_ids": [
+        1
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "cms",
+    "value": "istanbul",
+    "expect": {
+      "result": false,
+      "item_id": null,
+      "key": null,
+      "head": "cms:istanbul",
+      "all_ids": []
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "cms",
+    "value": "ISPARTA",
+    "expect": {
+      "result": false,
+      "item_id": null,
+      "key": null,
+      "head": "cms:isparta",
+      "all_ids": []
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "cms",
+    "value": "ısparta",
+    "expect": {
+      "result": true,
+      "item_id": 2,
+      "key": "dotless",
+      "head": "cms:ısparta",
+      "all_ids": [
+        2
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "framework",
+    "value": "ΟΔΥΣΣΕΥΣ 2",
+    "expect": {
+      "result": true,
+      "item_id": 3,
+      "key": "sigma-final",
+      "head": "framework:οδυσσευς 2",
+      "all_ids": [
+        3
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "framework",
+    "value": "ΟΔΥΣΣΕΥΣΑ",
+    "expect": {
+      "result": false,
+      "item_id": null,
+      "key": null,
+      "head": "framework:οδυσσευσα",
+      "all_ids": []
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "cdn",
+    "value": "Σ",
+    "expect": {
+      "result": false,
+      "item_id": null,
+      "key": null,
+      "head": "cdn:σ",
+      "all_ids": []
+    }
+  },
+  {
+    "call": "match",
+    "head": "cdn:ς",
+    "expect": {
+      "result": true,
+      "item_id": 4,
+      "key": "sigma-alone",
+      "head": "cdn:ς",
+      "all_ids": [
+        4
+      ]
+    }
+  },
+  {
+    "call": "match",
+    "head": "CDN:Σ",
+    "expect": {
+      "result": false,
+      "item_id": null,
+      "key": null,
+      "head": "cdn:σ",
+      "all_ids": []
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "cdn",
+    "value": "STRASSE",
+    "expect": {
+      "result": false,
+      "item_id": null,
+      "key": null,
+      "head": "cdn:strasse",
+      "all_ids": []
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "cdn",
+    "value": "STRAẞE",
+    "expect": {
+      "result": true,
+      "item_id": 5,
+      "key": "sharp-s",
+      "head": "cdn:straße",
+      "all_ids": [
+        5
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "api",
+    "value": "ẞ",
+    "expect": {
+      "result": true,
+      "item_id": 6,
+      "key": "capital-sharp",
+      "head": "api:ß",
+      "all_ids": [
+        6
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "tls",
+    "value": "K",
+    "expect": {
+      "result": true,
+      "item_id": 7,
+      "key": "kelvin",
+      "head": "tls:k",
+      "all_ids": [
+        7
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "tls",
+    "value": "K",
+    "expect": {
+      "result": true,
+      "item_id": 7,
+      "key": "kelvin",
+      "head": "tls:k",
+      "all_ids": [
+        7
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "link",
+    "value": "Å",
+    "expect": {
+      "result": true,
+      "item_id": 8,
+      "key": "angstrom",
+      "head": "link:å",
+      "all_ids": [
+        8
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "json",
+    "value": "Ǆ",
+    "expect": {
+      "result": true,
+      "item_id": 9,
+      "key": "titlecase",
+      "head": "json:ǆ",
+      "all_ids": [
+        9
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "link",
+    "value": "ᾀ",
+    "expect": {
+      "result": true,
+      "item_id": 10,
+      "key": "greek-iota",
+      "head": "link:ᾀ",
+      "all_ids": [
+        10
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "url",
+    "value": "𐐀/x",
+    "expect": {
+      "result": true,
+      "item_id": 11,
+      "key": "deseret",
+      "head": "url:𐐨/x",
+      "all_ids": [
+        11
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "path",
+    "value": "ꭰ",
+    "expect": {
+      "result": true,
+      "item_id": 12,
+      "key": "cherokee",
+      "head": "path:ꭰ",
+      "all_ids": [
+        12
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "file",
+    "value": "ა",
+    "expect": {
+      "result": true,
+      "item_id": 13,
+      "key": "georgian",
+      "head": "file:ა",
+      "all_ids": [
+        13
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "subdomain",
+    "value": "ⅻ",
+    "expect": {
+      "result": true,
+      "item_id": 14,
+      "key": "roman",
+      "head": "subdomain:ⅻ",
+      "all_ids": [
+        14
+      ]
+    }
+  },
+  {
+    "call": "match_group",
+    "group": "script_src",
+    "value": "abc",
+    "expect": {
+      "result": false,
+      "item_id": null,
+      "key": null,
+      "head": "script_src:abc",
+      "all_ids": []
+    }
+  },
+  {
+    "call": "match_search",
+    "search": {
+      "headers": {
+        "СЕРВЕР": "АПАЧ 2.4"
+      }
+    },
+    "expect": {
+      "result": true,
+      "item_id": 16,
+      "key": "headers-cyr",
+      "head": "сервер:апач 2.4"
+    }
+  }
+]
