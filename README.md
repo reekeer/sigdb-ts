@@ -136,7 +136,8 @@ npm test
 ```
 
 `tests/golden/` holds rule sets with expected results and section hashes, `tests/fixtures/`
-holds reference `.sigdb` files built from the same rules.
+holds reference `.sigdb` files built from the same rules, and `tests/fixtures/rs/` the same cases
+built by [sigdb-rs](https://github.com/reekeer/sigdb-rs).
 
 ## License
 

@@ -6,7 +6,7 @@ import { test } from "node:test";
 import { load } from "../src/index.ts";
 import { htmlHeads } from "../src/internal/groups.ts";
 import { repr } from "../src/internal/repr.ts";
-import { FIXTURES_DIR, GOLDEN_DIR, goldenCases, loadVectors, readPlain, runVector } from "./support.ts";
+import { EXTRA_DIR, FIXTURES_DIR, GOLDEN_DIR, goldenCases, loadVectors, readPlain, runVector } from "./support.ts";
 
 for (const caseName of goldenCases()) {
   test(`reference file: ${caseName}`, () => {
@@ -16,6 +16,18 @@ for (const caseName of goldenCases()) {
       assert.deepEqual(runVector(db, input), expect, `${caseName}[${i}]`);
     });
   });
+}
+
+for (const dir of [GOLDEN_DIR, EXTRA_DIR]) {
+  for (const caseName of goldenCases(dir)) {
+    test(`sigdb-rs file: ${caseName}`, () => {
+      const db = load(join(FIXTURES_DIR, "rs", `${caseName}.sigdb`), { lazy: false });
+      assert.deepEqual(db.sectionDigests(), readPlain(join(dir, caseName, "sections.json")));
+      loadVectors(caseName, dir).forEach(({ input, expect }, i) => {
+        assert.deepEqual(runVector(db, input), expect, `${caseName}[${i}]`);
+      });
+    });
+  }
 }
 
 test("htmlHeads matches reference output", () => {

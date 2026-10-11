@@ -6,6 +6,7 @@ dist/
 # SignatureDB files (committed fixtures are the exception)
 *.sigdb
 !tests/fixtures/*.sigdb
+!tests/fixtures/rs/*.sigdb
 
 .DS_Store
 .idea/
